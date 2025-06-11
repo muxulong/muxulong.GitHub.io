@@ -1,4 +1,3 @@
-#pragma once
 #include <thread>
 #include <mutex>
 #include <vector>
@@ -67,7 +66,7 @@ ThreadPool::ThreadPool(int min, int max) : m_maxThreadNumber(max),
     }
 }
 
-~ThreadPool::ThreadPool()
+ThreadPool::~ThreadPool()
 {
     m_stop.store(true);
     m_condition.notify_all();
