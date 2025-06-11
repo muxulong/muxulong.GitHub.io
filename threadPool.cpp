@@ -15,7 +15,7 @@ class ThreadPool
 public:
     ThreadPool(int min = 4, int max = thread::hardware_concurrency());
     ~ThreadPool();
-    void *manager(void *manag);
+    void manager();
     void worker();
     void addTask(function<void(void)>);
 
