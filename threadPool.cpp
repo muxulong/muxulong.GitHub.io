@@ -27,7 +27,7 @@ private:
     atomic<int> m_idlThreadNumber;
     atomic<int> m_exitThreadNumber;
     atomic<bool> m_stop;
-    map<thread::id, thread> m_workers; // ÈÎÎñ¶ÓÁÐ
+    map<thread::id, thread> m_workers; // ä»»åŠ¡é˜Ÿåˆ—
     vector<thread::id> m_idsVector;
 
     queue<function<void(void)>> m_taskQueue;
@@ -57,7 +57,7 @@ ThreadPool::ThreadPool(int min, int max) : m_maxThreadNumber(max),
 {
     // m_idleThreads = m_curThreads = max / 2;
     m_idlThreadNumber = m_curThreadNumber = min;
-    cout << "Ïß³ÌÊýÁ¿: " << m_curThreadNumber << endl;
+    cout << "çº¿ç¨‹æ•°é‡: " << m_curThreadNumber << endl;
     m_manager = new thread(&ThreadPool::manager, this);
     for (int i = 0; i < m_curThreadNumber; ++i)
     {
@@ -75,7 +75,7 @@ ThreadPool::~ThreadPool()
         thread &t = it.second;
         if (t.joinable())
         {
-            cout << "******** Ïß³Ì " << t.get_id() << " ½«ÒªÍË³öÁË..." << endl;
+            cout << "******** çº¿ç¨‹ " << t.get_id() << " å°†è¦é€€å‡ºäº†..." << endl;
             t.join();
         }
     }
@@ -103,7 +103,7 @@ void ThreadPool::manager()
                 auto it = m_workers.find(id);
                 if (it != m_workers.end())
                 {
-                    cout << "############## Ïß³Ì " << (*it).first << "¼´½«±»Ïú»Ù...." << endl;
+                    cout << "############## çº¿ç¨‹ " << (*it).first << "å³å°†è¢«é”€æ¯...." << endl;
                     (*it).second.join();
                     m_workers.erase(it);
                 }
@@ -113,7 +113,7 @@ void ThreadPool::manager()
         else if (idle == 0 && current < m_maxThreadNumber)
         {
             thread t(&ThreadPool::worker, this);
-            cout << "+++++++++++++++ Ìí¼ÓÁËÒ»¸öÏß³Ì, id: " << t.get_id() << endl;
+            cout << "+++++++++++++++ æ·»åŠ äº†ä¸€ä¸ªçº¿ç¨‹, id: " << t.get_id() << endl;
             m_workers.insert(make_pair(t.get_id(), move(t)));
             m_curThreadNumber++;
             m_idlThreadNumber++;
@@ -142,7 +142,7 @@ void ThreadPool::worker()
                 m_condition.wait(locker);
                 if (m_exitThreadNumber.load() > 0)
                 {
-                    cout << "----------------- Ïß³ÌÈÎÎñ½áÊø, ID: " << this_thread::get_id() << endl;
+                    cout << "----------------- çº¿ç¨‹ä»»åŠ¡ç»“æŸ, ID: " << this_thread::get_id() << endl;
                     m_exitThreadNumber--;
                     m_curThreadNumber--;
                     unique_lock<mutex> lck(m_taskMutex);
@@ -153,7 +153,7 @@ void ThreadPool::worker()
 
             if (!m_taskQueue.empty())
             {
-                cout << "È¡³öÒ»¸öÈÎÎñ..." << endl;
+                cout << "å–å‡ºä¸€ä¸ªä»»åŠ¡..." << endl;
                 task = move(m_taskQueue.front());
                 m_taskQueue.pop();
             }
