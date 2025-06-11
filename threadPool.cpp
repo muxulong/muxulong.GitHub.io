@@ -86,7 +86,7 @@ ThreadPool::~ThreadPool()
     delete m_manager;
 }
 
-void ThreadPool::manager(void manag)
+void ThreadPool::manager()
 {
     while (!m_stop.load())
     {
