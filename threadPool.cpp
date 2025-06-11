@@ -75,7 +75,7 @@ ThreadPool::~ThreadPool()
         thread &t = it.second;
         if (t.joinable())
         {
-            cout << "******** 线程 " << t.get_id() << " 将要退出了..." << endl;
+            cout << "******** 线程 " << t.get_id() << " 将要逢�出了..." << endl;
             t.join();
         }
     }
@@ -103,7 +103,7 @@ void ThreadPool::manager()
                 auto it = m_workers.find(id);
                 if (it != m_workers.end())
                 {
-                    cout << "############## 线程 " << (*it).first << "即将被销毁...." << endl;
+                    cout << "############## 线程 " << (*it).first << "即将被销毄1�7...." << endl;
                     (*it).second.join();
                     m_workers.erase(it);
                 }
@@ -113,7 +113,7 @@ void ThreadPool::manager()
         else if (idle == 0 && current < m_maxThreadNumber)
         {
             thread t(&ThreadPool::worker, this);
-            cout << "+++++++++++++++ 添加了一个线程, id: " << t.get_id() << endl;
+            cout << "+++++++++++++++ 添加了一个线稄1�7, id: " << t.get_id() << endl;
             m_workers.insert(make_pair(t.get_id(), move(t)));
             m_curThreadNumber++;
             m_idlThreadNumber++;
@@ -153,7 +153,7 @@ void ThreadPool::worker()
 
             if (!m_taskQueue.empty())
             {
-                cout << "取出一个任务..." << endl;
+                cout << "取出丢�个任劄1�7..." << endl;
                 task = move(m_taskQueue.front());
                 m_taskQueue.pop();
             }
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     ThreadPool pool(4);
     for (int i = 0; i < 10; ++i)
     {
-        auto func = bind(calc, i, i * 2);
+        function<void(int,int)> func = bind(calc, i, i * 2);
         pool.addTask(func);
     }
     getchar();
