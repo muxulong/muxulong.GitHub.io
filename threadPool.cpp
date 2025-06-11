@@ -8,13 +8,14 @@
 #include <condition_variable>
 #include <map>
 #include <future>
+#include <iostream>
 using namespace std;
 
-class pthreadPool
+class ThreadPool
 {
 public:
-    pthreadPool(int min = 4, int max = thread::hardware_concurrency());
-    ~pthreadPool();
+    ThreadPool(int min = 4, int max = thread::hardware_concurrency());
+    ~ThreadPool();
     void *manager(void *manag);
     void *worker();
     void *addTask(function<void *(void *)>);
@@ -27,7 +28,7 @@ private:
     atomic<int> m_idlThreadNumber;
     atomic<int> m_exitThreadNumber;
     atomic<bool> m_stop;
-    map<thread::id, thread> m_workers;          //任务队列
+    map<thread::id, thread> m_workers; // 任务队列
     vector<thread::id> m_idsVector;
 
     queue<function<void *(void *)>> m_taskQueue;
@@ -52,8 +53,8 @@ private:
     */
 }
 
-pthreadPool::pthreadPool(int min, int max) : m_maxThreadNumber(max),
-                                             m_minThreadNumber(min), m_stop(false), m_exitThreadNumber(0)
+ThreadPool::ThreadPool(int min, int max) : m_maxThreadNumber(max),
+                                           m_minThreadNumber(min), m_stop(false), m_exitThreadNumber(0)
 {
     // m_idleThreads = m_curThreads = max / 2;
     m_idlThreadNumber = m_curThreadNumber = min;
@@ -66,7 +67,7 @@ pthreadPool::pthreadPool(int min, int max) : m_maxThreadNumber(max),
     }
 }
 
-~pthreadPool::pthreadPool()
+~ThreadPool::ThreadPool()
 {
     m_stop.store(true);
     m_condition.notify_all();
@@ -86,7 +87,7 @@ pthreadPool::pthreadPool(int min, int max) : m_maxThreadNumber(max),
     delete m_manager;
 }
 
-void *pthreadPool::manager(void *manag)
+void *ThreadPool::manager(void *manag)
 {
     while (!m_stop.load())
     {
@@ -121,7 +122,7 @@ void *pthreadPool::manager(void *manag)
     }
 }
 
-void * ThreadPool::addTask(function<void *(void *)> task)
+void *ThreadPool::addTask(function<void *(void *)> task)
 {
     {
         lock_guard<mutex> locker(m_queueMutex);
@@ -130,7 +131,7 @@ void * ThreadPool::addTask(function<void *(void *)> task)
     m_condition.notify_one();
 }
 
-void * ThreadPool::worker()
+void *ThreadPool::worker()
 {
     while (!m_stop.load())
     {
@@ -175,7 +176,7 @@ void calc(int x, int y)
     this_thread::sleep_for(chrono::seconds(2));
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     ThreadPool pool(4);
     for (int i = 0; i < 10; ++i)
