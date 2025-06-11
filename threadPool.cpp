@@ -16,8 +16,8 @@ public:
     ThreadPool(int min = 4, int max = thread::hardware_concurrency());
     ~ThreadPool();
     void *manager(void *manag);
-    void *worker();
-    void *addTask(function<void (void )>);
+    void worker();
+    void addTask(function<void(void)>);
 
 private:
     thread *m_manager;
@@ -30,7 +30,7 @@ private:
     map<thread::id, thread> m_workers; // 任务队列
     vector<thread::id> m_idsVector;
 
-    queue<function<void (void )>> m_taskQueue;
+    queue<function<void(void)>> m_taskQueue;
     mutex m_taskMutex;
     mutex m_queueMutex;
     condition_variable m_condition;
@@ -121,7 +121,7 @@ void *ThreadPool::manager(void *manag)
     }
 }
 
-void *ThreadPool::addTask(function<void (void )> task)
+void ThreadPool::addTask(function<void(void)> task)
 {
     {
         lock_guard<mutex> locker(m_queueMutex);
@@ -134,7 +134,7 @@ void ThreadPool::worker()
 {
     while (!m_stop.load())
     {
-        function<void (void )> task = nullptr;
+        function<void(void)> task = nullptr;
         {
             unique_lock<mutex> locker(m_queueMutex);
             while (!m_stop.load() && m_taskQueue.empty())
