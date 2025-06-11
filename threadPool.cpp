@@ -50,7 +50,7 @@ private:
     mutex m_queueMutex;
     condition_variable m_condition;
     */
-}
+};
 
 ThreadPool::ThreadPool(int min, int max) : m_maxThreadNumber(max),
                                            m_minThreadNumber(min), m_stop(false), m_exitThreadNumber(0)
@@ -97,7 +97,7 @@ void *ThreadPool::manager(void *manag)
         {
             m_exitThreadNumber.store(2);
             m_condition.notify_all();
-            unique_lock<mutex> lck(m_idsMutex);
+            unique_lock<mutex> lck(m_taskMutex);
             for (const auto &id : m_idsVector)
             {
                 auto it = m_workers.find(id);
